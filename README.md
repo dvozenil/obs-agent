@@ -1,0 +1,1 @@
+A simple observability agent to actively learn about containers and observability.
