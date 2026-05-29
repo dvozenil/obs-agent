@@ -1,19 +1,29 @@
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, Request
 import httpx, time
+from contextlib import asynccontextmanager
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.http = httpx.AsyncClient(
+        headers = {"User-Agent": "obs-agent/0.1"},
+        timeout=10.0,
+        follow_redirects=True
+    )
+    yield
+    await app.state.http.aclose()
+
+app = FastAPI(lifespan=lifespan)
 
 @app.get("/health")
 async def health():
     return {"status": "ok"} 
 
 @app.get("/check")
-async def check(url: str):
+async def check(request: Request, url: str):
     start = time.monotonic()
     try:
-        async with httpx.AsyncClient() as client:
-            headers = {"User-Agent": "obs-agent/0.1"}
-            response = await client.get(url, headers=headers, timeout=10.0, follow_redirects=True)
+        client = request.app.state.http
+        response = await client.get(url)
     except httpx.RequestError as exc:
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=str(exc))
     end = time.monotonic()
