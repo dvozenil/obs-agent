@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, status, Request
 import httpx, time
 from contextlib import asynccontextmanager
+from pydantic import HttpUrl
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -19,14 +20,14 @@ async def health():
     return {"status": "ok"} 
 
 @app.get("/check")
-async def check(request: Request, url: str):
+async def check(request: Request, url: HttpUrl):
     start = time.monotonic()
     try:
         client = request.app.state.http
-        response = await client.get(url)
+        response = await client.get(str(url))
     except httpx.RequestError as exc:
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=str(exc))
     end = time.monotonic()
     elapsed = end - start
-    return {"status_code": response.status_code, "redirected": bool(response.history), "original_url": url,
+    return {"status_code": response.status_code, "redirected": bool(response.history), "original_url": str(url),
              "final_url": str(response.url), "latency_seconds": elapsed}
