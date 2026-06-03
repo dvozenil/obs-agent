@@ -13,8 +13,8 @@ A simple observability agent to actively learn about containers and observabilit
 - [x] Step 2 — FastAPI health-checker service
 - [x] Step 3 — Dockerize the service
 - [x] Step 4 — Push to GHCR
-- [ ] Step 5 — Docker Compose with healthcheck **(current)**
-- [ ] Step 6 — Add Prometheus `/metrics` endpoint
+- [x] Step 5 — Docker Compose with healthcheck 
+- [ ] Step 6 — Add Prometheus `/metrics` endpoint **(current)**
 - [ ] Step 7 — Spin up Prometheus in Compose
 - [ ] Step 8 — Grafana dashboard
 - [ ] Step 9 — README polish
