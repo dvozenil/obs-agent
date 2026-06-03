@@ -11,4 +11,4 @@ wheels/
 
 __pycache__/
 .env
-.github/
+.github/agents/
